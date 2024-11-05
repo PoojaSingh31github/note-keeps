@@ -2,11 +2,10 @@ import notesModal from "../modals/notesModal.js";
 
 export const addNotes = async (req, res) => {
     const { title, content, pdf, images, textColor, isBold, useImageList } = req.body;
-    
 
     try {
         const note = new notesModal({
-            userId ,
+            userId: req.user._id ,
             title,
             content,
             pdf,
@@ -24,11 +23,12 @@ export const addNotes = async (req, res) => {
 }
 
 export const getNotes = async (req, res) => {
+
+    const {userId} = req.body
+
     try {
-        // Fetch all notes without any filters
-        const notes = await notesModal.find();
+        const notes = await notesModal.find({_id: userId});
         
-        // Send the notes back to the client
         res.status(200).json({ notes });
     } catch (error) {
         // Handle any errors that occur

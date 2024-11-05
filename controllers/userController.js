@@ -45,7 +45,7 @@ export const login = async (req,res)=>{
         const didmatch = await bcryptjs.compare(password, userInDB.password);
 
         if (didmatch){
-            const jwtToken = jwt.sign({_id: userInDB._id}, process.env.JWT_SECRET);
+            const jwtToken = jwt.sign({_id: userInDB._id}, process.env.JWT_SECRET, { expiresIn: '1h' });
             const userinfo = {"email": userInDB.email, "name": userInDB.name, "id": userInDB._id, "isadmin": userInDB.isAdmin};
             
             return res.status(200).json({result:{token:jwtToken, user: userinfo, message: "user successfully login"}});

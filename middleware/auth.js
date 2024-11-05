@@ -1,24 +1,37 @@
-// middleware/authenticate.js
 import jwt from "jsonwebtoken";
 import userModal from "../modals/userModal.js";
 
-
-
 const authenticate = async (req, res, next) => {
-  try {
-    const token = req.header('Authorization').replace('Bearer ', '');
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await userModal.findOne({ _id: decoded._id, 'tokens.token': token });
+  const { authorization } = req.headers;
 
-    if (!user) {
-      throw new Error();
+  if (!authorization) {
+    return res.status(401).json({ error: "User not logged in" });
+  }
+
+  const token = authorization.replace("Bearer", "").trim();
+
+  console.log("Received Token:", token);
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const { _id } = payload;
+    const dbUser = await userModal.findById(_id);
+    
+    if (!dbUser) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    req.user = user;
+    // Corrected variable name to `dbUser`
+    req.user = dbUser;
     next();
   } catch (error) {
+    console.error("Authentication Error:", error);  // Log the error
     res.status(401).json({ message: 'Please authenticate' });
   }
 };
 
-module.exports = authenticate;
+export default authenticate;

@@ -1,6 +1,6 @@
 import mongoose  from "mongoose";
-
 const noteSchema = new mongoose.Schema({
+
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'userSchema',
