@@ -22,6 +22,7 @@ mongoose.connect(uri, {
 app.use(cors());
 app.use(express.json());
 app.use( "/api/users", userRouter);
+app.use('/uploads', express.static('uploads'));
 app.use( "/api/users/notes", notesRouter);
 
 // Error handling middleware

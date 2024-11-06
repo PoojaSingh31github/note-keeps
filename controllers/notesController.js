@@ -1,15 +1,41 @@
 import notesModal from "../modals/notesModal.js";
+import multer from 'multer';
+import path from 'path';
+
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, './uploads');
+    },
+    filename: (req, file, cb) => {
+      const uniqueName = `${Date.now()}-${file.originalname}`;
+      cb(null, uniqueName);
+    }
+  });
+
+const upload = multer({
+    storage,
+    fileFilter: (req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      if (ext !== '.pdf' && ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') {
+        return cb(new Error('Only PDFs and image files are allowed'), false);
+      }
+      cb(null, true);
+    }
+  });
+  
 
 export const addNotes = async (req, res) => {
-    const {userId, title, content, pdf, images, textColor, isBold, useImageList } = req.body;
+    const {userId, title, content, textColor, isBold, useImageList } = req.body;
     console.log( title, content, pdf, images, textColor, isBold, useImageList, "dfghjk")
+    const files = req.files;
     try {
         const note = new notesModal({
             userId ,
             title,
             content,
-            pdf,
-            images,
+            pdf : files.pdf ? files.pdf[0].path : null,
+            images : files.images ? files.images.map(file => file.path) : [],
             textColor,
             isBold,
             useImageList

@@ -3,7 +3,10 @@ import { addNotes, deleteNotes, getNotes, modifyNotes } from "../controllers/not
 // import auth from "../middleware/auth.js"
 const router = express.Router();
 
-router.post("/addNotes", addNotes);
+router.post("/addNotes",upload.fields([
+    { name: 'pdf', maxCount: 1 },
+  { name: 'images', maxCount: 10 }
+]), addNotes);
 router.get("/getNotes", getNotes);
 router.delete("/deleteNotes", deleteNotes);
 router.put("/modifyNotes", modifyNotes);
